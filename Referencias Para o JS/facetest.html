@@ -1,0 +1,180 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+	<head>
+		<title>facetest</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<style type="text/css" media="screen">
+		html, body { height:100%; background-color: #ffffff;}
+		body { margin:0; padding:0; overflow:hidden; }
+		#flashContent { width:100%; height:100%; }
+		</style>
+		<script>
+			var accessToken;
+			var userId;
+			function statusChangeCallback(response)
+			{
+				console.log('statusChangeCallback');
+				console.log(response);
+				if (response.status === 'connected') 
+				{
+					testAPI();
+				} else if (response.status ==='not_authorized')
+				{
+					document.getElementById('status').innerHTML = 'Please log' + 
+					'into this app.';
+				}
+			}
+			function checkLoginState() {
+				FB.getLoginStatus(function(response) 
+					{
+						statusChangeCallback(response);
+					}
+				);
+			}
+
+    		window.fbAsyncInit = function() 
+    		{
+        		// init the FB JS SDK
+        		FB.init
+        		(
+        			{
+        			appId : '265192360255229', // App ID from the App Dashboard
+        			version : 'v2.1',
+					channelUrl : 'http://localhost/facetest/facetest.html', //Channel File for x-domain communication, replace YOUR_DOMAIN.COM with your domain
+            		status : true, // check the login status upon init?
+            		cookie : true, // set sessions cookies to allow your server to access the session?
+            		xfbml  : true  // parse XFBML tags on this page?
+        			}
+        		);
+    // Additional initialization code such as adding Event Listeners goes here
+   	 	};
+    	// Load the SDK's source Asynchronously
+    	// Note that the debug version is being actively developed and 
+    	// might contain some type checks that are overly strict. 
+    	// Please report such bugs using the bugs tool.
+    	(function(d, debug)
+    		{
+        		var js, id = 'facebook-jssdk', ref = d.getElementsByTagName('script')[0];
+        		if (d.getElementById(id)) {return;}
+        		js = d.createElement('script'); js.id = id; js.async = true;
+        		js.src = "//connect.facebook.net/en_US/sdk" + (debug ? "/debug" : "") + ".js";
+        		ref.parentNode.insertBefore(js, ref);
+    		}
+    	(document, /*debug*/ false));
+    	function testAPI() 
+    	{
+    		console.log('Welcome! Fetching your information....');
+    		FB.api('/me',function (response)
+    			{
+    				console.log ('Successful login for'+response.name);
+    				document.getElementById('status').innerHTML = 'Thanks for Logging in'+ response.name + '!';
+    			}
+    		);
+    	}
+
+</script>
+	</head>
+	<body>
+		<div id="fb-root"></div>
+		<div id="flashContent">
+			<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" width="550" height="400" id="facetest" name="facetest" align="middle">
+				<param name="movie" value="facetest.swf" />
+				<param name="quality" value="high" />
+				<param name="bgcolor" value="#ffffff" />
+				<param name="play" value="true" />
+				<param name="loop" value="true" />
+				<param name="wmode" value="window" />
+				<param name="scale" value="showall" />
+				<param name="menu" value="true" />
+				<param name="devicefont" value="false" />
+				<param name="salign" value="" />
+				<param name="allowScriptAccess" value="always" />
+				<!--[if !IE]>-->
+				<object type="application/x-shockwave-flash" data="facetest.swf" width="550" height="400" id="facetest2" name="facetest2">
+					<param name="movie" value="facetest.swf" />
+					<param name="quality" value="high" />
+					<param name="bgcolor" value="#ffffff" />
+					<param name="play" value="true" />
+					<param name="loop" value="true" />
+					<param name="wmode" value="window" />
+					<param name="scale" value="showall" />
+					<param name="menu" value="true" />
+					<param name="devicefont" value="false" />
+					<param name="salign" value="" />
+					<param name="allowScriptAccess" value="always" />
+				<!--<![endif]-->
+					<a href="http://www.adobe.com/go/getflash">
+						<img src="http://www.adobe.com/images/shared/download_buttons/get_flash_player.gif" alt="Get Adobe Flash player" />
+					</a>
+				<!--[if !IE]>-->
+				</object>
+				<!--<![endif]-->
+			</object>
+		</div>
+		<script type="text/javascript">
+		function testeJS(textoFlash)
+		{
+			console.info('test mouse location '+textoFlash);
+			
+
+		}
+		function publishFB(textoFlash)
+		{
+			FB.api('/me/feed', 'post', {
+      		message:'hello World',
+ 			},function(response) {
+      			console.log("Post ID"+response.id);
+ 			});
+		}
+		function picPublishFB(pngImage)//Esse trecho posta uma imagem na página do usuário logado no facebook , a imagem é o link abaixo
+		{
+			 var imgURL ='https://i.imgur.com/UM1QfTI.jpg'
+        FB.api('/photos', 'post', {
+            message: 'photo description',
+            access_token: accessToken,
+            url: imgURL
+        }, function (response) {
+
+            if (!response || response.error) {
+                alert('Error occured:' + response);
+            } else {
+                alert('Post ID: ' + response.id);
+            }
+
+        });
+		}
+		function myFBcall()
+		{
+			//document.getElementById("facetest2").myFlashCall("test string");
+			FB.login(function(response) 
+					{
+						if(response.authResponse)
+						{
+							console.log('Welcome! Fetching Information....');
+							FB.api('/me',function(response)
+								{
+									alert('Bem vindo: '+ response.name);
+									userId = response.id;
+									console.log('User id :'+userId);
+									//document.getElementById("facetest2").myFlashCall(response.name);
+
+								}	
+								)
+							FB.getLoginStatus(function(response)
+								{
+									if (response.status ==='connected')
+									{
+										accessToken=response.authResponse.accessToken;
+									}
+								}	
+								)
+						} else 
+						{
+							console.log('User canceled login or did not fully authorize.');
+						}
+					}
+				);
+		}
+		</script>
+	</body>
+</html>
